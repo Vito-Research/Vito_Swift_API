@@ -42,7 +42,7 @@ class ML: ObservableObject {
         
         completionHandler(healthData)
     }
-    func exportDataToCSV(data: [HealthData], codableRisk: [CodableRisk], num: Int,  completionHandler: @escaping (Bool) -> Void) {
+    func exportDataToCSV(data: [HealthData], codableRisk: [CodableRisk], num: Int,  url: String, completionHandler: @escaping (Bool) -> Void) {
         var trainingData = DataFrame()
         var trainingData2 = DataFrame()
         print("Exporting...")
@@ -119,7 +119,8 @@ class ML: ObservableObject {
             print(trainingData.columns)
         try trainingData.writeCSV(to: getDocumentsDirectory().appendingPathComponent("Vito_Test2/Vito_Health_Data\(num).csv"))
             print()
-            try trainingData2.writeCSV(to: getDocumentsDirectory().appendingPathComponent("/Vito_Test2/Vito_Risk_Data\(num).csv"))
+            let url2 = URL(fileURLWithPath: url)
+            try trainingData2.writeCSV(to: url2.appendingPathComponent("/Vito_Test2/Vito_Risk_Data\(num).csv"))
             //print(getDocumentsDirectory().appendingPathComponent("A.csv").dataRepresentation)
         } catch {
             print(error)

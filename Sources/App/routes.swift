@@ -30,7 +30,7 @@ func routes(_ app: Application) throws {
             
             
             health.medianOfAvgs = 0
-                ML().importCSV(data: try DataFrame(contentsOfCSVFile: filepath)) { healthData in
+        ML().importCSV(data: try DataFrame(contentsOfCSVFile: filepath)) { healthData in
                     //health.healthData = healthData
                     print(healthData.count)
                    
@@ -47,7 +47,7 @@ func routes(_ app: Application) throws {
                             let riskArr = health.getRiskScorev3(healthData, avgs: avgs)
 
                             //if #available(iOS 15, *) {
-                            ML().exportDataToCSV(data: riskArr, codableRisk: health.codableRisk, num: 1) { _ in
+            ML().exportDataToCSV(data: riskArr, codableRisk: health.codableRisk, num: 1, url: app.directory.publicDirectory) { _ in
                                    
                                 }
                             
