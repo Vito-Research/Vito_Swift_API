@@ -1,10 +1,17 @@
 import Vapor
 import TabularData
+
+let health = Healthv3()
+var healthData = [HealthData]()
 func routes(_ app: Application) throws {
-    app.post { req -> String in
-        
+    
+    app.post { req async throws -> [Double] in
+        struct Input: Codable {
+            var arr: [Double]
+        }
       
-            let input = try req.content.decode([Double].self)
+            let input = try req.content.decode(Input.self)
+        print(input)
             
 //            let path = app.directory.publicDirectory + input.file.filename
 //
@@ -24,7 +31,7 @@ func routes(_ app: Application) throws {
 //                try str.data(using: .utf8)?.write(to: filepath)
             
             //}
-            let health = Healthv4()
+            
             
             
             health.medianOfAvgs = 0
@@ -41,17 +48,24 @@ func routes(_ app: Application) throws {
 
                         //DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
            
-        var healthData = [HealthData]()
-        for i in input.indices {
-            healthData.append(HealthData(id: UUID().uuidString, type: .Health, title: "", text: "", date: Date().addingTimeInterval(TimeInterval(84600 * i)), data: input[i]))
+        
+        for i in input.arr.indices {
+            healthData.append(HealthData(id: UUID().uuidString, type: .Health, title: "", text: "", date: Date().addingTimeInterval(TimeInterval(84600 * i)), endDate:  Date().addingTimeInterval(TimeInterval(84600 * i)), data: input.arr[i]))
+            print(healthData.last)
         }
+      //  DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+         
         let avgs  = health.getAvgPerNight(healthData)
-                            let riskArr = health.getRiskScorev3(healthData, avgs: avgs)
-
+            //DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+        let riskArr = Healthv4().getRiskScorev3(healthData, avgs: avgs)
+        health.riskData = riskArr
+        return riskArr.map{$0.risk ?? 0.0}
+           // }
+       // }
                             //if #available(iOS 15, *) {
-            ML().exportDataToCSV(data: riskArr, codableRisk: health.codableRisk, num: 1, url: app.directory.publicDirectory) { _ in
-                                   
-                                }
+//            ML().exportDataToCSV(data: riskArr, codableRisk: health.codableRisk, num: 1, url: app.directory.publicDirectory) { _ in
+//
+//                                }
                             
 //                                            for riskIndex in riskArr.indices {
 //                                                health.healthData[riskIndex].risk = riskArr[riskIndex]
@@ -73,10 +87,12 @@ func routes(_ app: Application) throws {
 
         
     
-      return "GG"
+        
     }
 
-    app.get("hello") { req -> String in
-        return "Hello, world!"
+    app.get("") { req -> [Double] in
+        let risk = health.riskData
+        health.riskData = []
+        return risk.map{$0.risk ?? 0.0}
     }
 }

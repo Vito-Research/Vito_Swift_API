@@ -34,6 +34,8 @@ class Healthv3: ObservableObject {
     // Stores healthdata
     private var healthData = [HealthData]()
     
+    @Published  var riskData = [HealthData]()
+    
     // Stores risk data
      //var riskData = [HealthData]()
     
@@ -359,7 +361,7 @@ class Healthv3: ObservableObject {
         // Filter to valid HR data
         let health = health2.filter {
         #warning("disabled Night")
-            return $0.title == "" && !$0.data.isNaN && $0.date.getTimeOfDay() == "Night"
+            return !$0.data.isNaN 
         }
         // Get start and end data
         let dates =  health.map{$0.date}.sorted(by: { $0.compare($1) == .orderedAscending })
