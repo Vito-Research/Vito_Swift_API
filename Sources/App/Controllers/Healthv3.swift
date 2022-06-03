@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Combine
-import Accelerate
+
 
 // Makes class stay on main thread
 
@@ -396,10 +396,9 @@ class Healthv3: ObservableObject {
     }
     
     func average(numbers: [Double]) -> Double {
-        // print(numbers)
-        
-        return vDSP.mean(numbers)
-    }
+       // print(numbers)
+       return Double(numbers.reduce(0,+))/Double(numbers.count)
+   }
     func populateAveragesData(_for targetDates: [Date], low: Int, high: Int, stepDates: [Date]) {
         
         var noDates = [String]()
@@ -481,4 +480,14 @@ class Healthv3: ObservableObject {
         // just send back the first one, which ought to be the only one
         return paths[0]
     }
+}
+extension Sequence where Element: AdditiveArithmetic {
+    /// Returns the total sum of all elements in the sequence
+    func sum() -> Element { reduce(.zero, +) }
+}
+extension Collection where Element: BinaryInteger {
+    /// Returns the average of all elements in the array
+    func average() -> Element { isEmpty ? .zero : sum() / Element(count) }
+    /// Returns the average of all elements in the array as Floating Point type
+    func average<T: FloatingPoint>() -> T { isEmpty ? .zero : T(sum()) / T(count) }
 }
